@@ -1,26 +1,77 @@
-import React from 'react';
-import logo from './logo.svg';
+import React,{useState,useEffect} from 'react';
+
+import { useDispatch, useSelector } from 'react-redux';
+
+
+
+import {
+BrowserRouter as Router,
+Routes,
+Route,
+Link,
+useParams
+
+} from "react-router-dom";
+
+import { isUserLoggedIn, getInitialData } from './actions';
+
+
+
+import SignIn from './SignIn';
+import HomePage from './HomePage';
+import Dashboard from './Dashboard';
+import PrivateOutlet from "./PrivateOutlet";
+
+
 import './App.css';
 
 function App() {
+	
+const dispatch = useDispatch();
+  //const auth = useSelector(state => state.auth)
+const auth = useSelector((state) => state.auth);
+	console.log(auth);
+	
+	//componentDidMount or componentDidUpdate
+  useEffect(() => {
+    if (!auth.authenticate) {
+      dispatch(isUserLoggedIn());
+    }
+    if(auth.authenticate){
+      dispatch(getInitialData());
+    }
+  }, [auth.authenticate]);
+	
   return (
+  <Router>
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+	<Routes>
+	  <Route path="/signin"  element={<SignIn/>}>Sign In
+	  </Route>
+
+	  
+	   <>
+	   {/*<Route path="/dashboard"  element={<Dashboard/>}>
+	   Dashboard
+	  </Route>
+	  
+	   <Route path="/homepage"  element={<HomePage/>}>HomePage
+	   </Route>*/}
+	   
+	   <Route path="/*" element={<PrivateOutlet/>}>
+		<Route path="dashboard" element={<Dashboard/>} />
+		</Route>
+	  
+	  
+	  </>
+	  
+	  
+		</Routes>
     </div>
+	  </Router>
   );
+
 }
 
 export default App;
